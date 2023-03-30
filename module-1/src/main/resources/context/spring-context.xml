@@ -3,12 +3,18 @@
        xmlns="http://www.springframework.org/schema/beans" xmlns:util="http://www.springframework.org/schema/util"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/util https://www.springframework.org/schema/util/spring-util.xsd">
 
-    <bean id="resourceReader" class="ru.otus.homework.model_1_1.utils.ResourceReaderImpl">
-        <constructor-arg  name="resourceName" value="questions/questions.csv" />
+    <bean id="ioService" class="ru.otus.homework.questions.old.xml.context.service.impl.IOServiceImpl"/>
+
+    <bean id="questionDao" class="ru.otus.homework.questions.old.xml.context.dao.impl.QuestionDaoImpl"/>
+
+    <bean id="resourceProvider" class="ru.otus.homework.questions.old.xml.context.utils.impl.ResourceProviderImpl">
+        <constructor-arg  name="fileName" value="questions/questions.csv"/>
     </bean>
 
-    <bean id="questionService" class="ru.otus.homework.model_1_1.service.QuestionServiceImpl">
-        <constructor-arg  name="resourceReader" ref="resourceReader"/>
+    <bean id="questionService" class="ru.otus.homework.questions.old.xml.context.service.impl.QuestionServiceImpl">
+        <constructor-arg name="ioService" index="0" ref="ioService"/>
+        <constructor-arg name="questionDao" index="1" ref="questionDao"/>
+        <constructor-arg name="resourceProvider" index="2" ref="resourceProvider"/>
     </bean>
 
 </beans>

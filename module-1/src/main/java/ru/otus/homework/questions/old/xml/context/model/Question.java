@@ -1,4 +1,4 @@
-package ru.otus.homework.model_1_1.model;
+package ru.otus.homework.questions.old.xml.context.model;
 
 import lombok.Getter;
 import lombok.Setter;
