@@ -1,32 +1,45 @@
 package ru.otus.homework.questions.old.xml.context.dao.impl;
 
-import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import ru.otus.homework.questions.old.xml.context.dao.QuestionDao;
 import ru.otus.homework.questions.old.xml.context.model.Question;
+import ru.otus.homework.questions.old.xml.context.utils.ResourceProvider;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Logger;
 
-import static java.util.Objects.isNull;
-
-@NoArgsConstructor
+@RequiredArgsConstructor
 public class QuestionDaoImpl implements QuestionDao {
-
-    private final Logger log = Logger.getLogger(QuestionDaoImpl.class.getName());
 
     private final List<Question> questions = new ArrayList<>();
 
-    @Override
-    public void save(Question question) {
-        if (isNull(question)) {
-            log.info("Question is null");
-        }
-        questions.add(question);
-    }
+    private final ResourceProvider resourceProvider;
 
     @Override
     public List<Question> getAll() {
+        init();
         return questions;
+    }
+
+    private void init() {
+        String fileName = resourceProvider.fileName();
+        var classLoader = getClass().getClassLoader();
+        try (var inputStream = classLoader.getResourceAsStream(fileName)) {
+            assert inputStream != null;
+            try (var streamReader = new InputStreamReader(inputStream, StandardCharsets.UTF_8);
+                 var reader = new BufferedReader(streamReader)) {
+
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    questions.add(new Question(line));
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

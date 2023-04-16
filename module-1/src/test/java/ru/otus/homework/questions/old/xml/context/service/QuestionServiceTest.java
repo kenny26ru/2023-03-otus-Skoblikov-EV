@@ -8,11 +8,10 @@ import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import ru.otus.homework.questions.old.xml.context.dao.QuestionDao;
-import ru.otus.homework.questions.old.xml.context.dao.impl.QuestionDaoImpl;
 import ru.otus.homework.questions.old.xml.context.model.Question;
 import ru.otus.homework.questions.old.xml.context.service.impl.QuestionServiceImpl;
-import ru.otus.homework.questions.old.xml.context.utils.ResourceProvider;
 
+import java.util.Collections;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -23,32 +22,28 @@ import static org.mockito.Mockito.when;
 class QuestionServiceTest {
 
     private static final String QUESTION = "Q1. What Is Spring Framework?";
-    private static final String FILE_NAME = "questions/questions.csv";
 
-    private QuestionDao questionDao = new QuestionDaoImpl();
+    @Mock
+    private QuestionDao questionDao;
 
     @Spy
     private IOService ioService;
-
-    @Mock
-    private ResourceProvider resourceProvider;
 
     @InjectMocks
     private QuestionServiceImpl questionService;
 
     @BeforeEach
     void setUp() {
-        questionService = new QuestionServiceImpl(ioService, questionDao, resourceProvider);
+        questionService = new QuestionServiceImpl(ioService, questionDao);
     }
 
     @Test
-    void test_get_questions_success() {
+    void testGetQuestionsSuccess() {
         var question = new Question(QUESTION);
-        when(resourceProvider.getFileName()).thenReturn(FILE_NAME);
-        questionDao.save(question);
-        List<Question> questionList = questionDao.getAll();
+        List<Question> questionList = Collections.singletonList(question);
+        when(questionDao.getAll()).thenReturn(questionList);
         questionService.startProcess();
         assertEquals(question.getQuestion(), questionList.get(0).getQuestion());
-        verify(resourceProvider).getFileName();
+        verify(questionDao).getAll();
     }
 }
